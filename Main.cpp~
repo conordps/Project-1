@@ -1,0 +1,76 @@
+#include <Arduino.h>
+
+
+const byte numBytes = 32;
+byte receivedBytes[numBytes];
+
+byte numReceived = 0;
+
+boolean newData = false;
+
+void setup(){
+	Serial.begin(9600);
+	Serial.println("<Arduino is ready>");
+	pinMode(13, OUTPUT);
+
+}
+
+
+void loop(){
+	
+	digitalWrite(13, HIGH); delay(1000);
+	digitalWrite(13, LOW); delay(1000);
+	recieveMessage();
+	displayNewData();
+}
+
+void receiveMessage(){
+
+	static boolean receiveInProgress = false;
+	static byte index = 0;
+	byte carriageReturn = 13;
+	byte rb;
+
+	while(Serial.available() > 0 && newData == false){
+
+		rb = Serial.read();
+
+		if(receiveInProgress == true){
+		
+			if( rb != carriageReturn){
+				receivedBytes[Index] = rb;
+				Index++;
+				if(Index >= numByes){
+					Index = numBytes -1;
+				}
+			}
+			else{
+				receivedBytes[Index] = '\0';
+				receiveInProgress = false;
+				numReceived = Index;
+				Index = 0;
+				newData = true;
+			}
+		}
+		
+		
+	}
+	}
+}
+
+
+void showNewData(){
+
+	if(newData == true){
+		Serial.print("This just in...!");
+		for(byte n = 0; n < numReceieved; n++){
+			Serial.print(receivedBytes[n], HEX);
+			serial.print(' ');
+		}
+		Serial.println();
+		newData = false;	
+	}	
+}
+
+
+
